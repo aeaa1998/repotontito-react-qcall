@@ -1,13 +1,11 @@
 {
-  "name": "q-call-demo",
-  "version": "0.1.0",
-  "private": true,
+  "name": "qcall-react",
+  "version": "1.0.0",
+  "private": false,
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
     "bootstrap": "^4.5.0",
-    "qcall": "^1.0.3",
+    "qcall": "^1.0.4",
+    "qcall-react": "^1.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1"

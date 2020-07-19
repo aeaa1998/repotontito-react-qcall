@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export default function Video({ srcObject, ...props }) {
     const refVideo = useRef(null)
 
     useEffect(() => {
         if (!refVideo.current) return
-        console.log(srcObject)
+        if (srcObject) {
+            console.log(srcObject.getTracks())
+        }
+
         refVideo.current.srcObject = srcObject
     }, [srcObject])
 

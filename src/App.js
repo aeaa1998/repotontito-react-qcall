@@ -1,38 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import logo from './logo.svg';
-import { RoomBuilder } from 'qcall'
+import React, { useState, useEffect } from 'react';
+
 import './App.css';
-import Video from './Video'
+import connectToRoom from 'qcall-react'
 const action = 'unregister'
-function App() {
-  const [videoStream, setVideoStream] = useState(null)
-  const [localMetadata, setLocalMetadata] = useState({ name: "Augusto Alonso" })
-  const [clients, setClients] = useState([])
-  const roomBuilded = new RoomBuilder("1", "deploy", "apikey")
-    .setMetadata({ name: "Augusto Alonso" })
-    .setOnStreamDennied(() => {
-      alert("Por favor otorgue los permisos necesarios")
-    })
-    .setOnLocalStream((localStream) => {
-      let holder = localStream.clone()
-      if (holder.getAudioTracks().length > 0) {
-        holder.getAudioTracks().forEach(track => holder.removeTrack(track))
-      }
-      setVideoStream(holder)
-    })
-    .setOnStreamAdded((callerId, remoteStream) => {
-      let clientHolder = room.clients.map(client => {
-        if (client.id == callerId) {
-          client.stream = remoteStream
-          console.log(client)
-        }
-        return client
-      })
-      setClients(clientHolder)
-    })
-    .build()
-  const [room, setRoom] = useState(roomBuilded)
+
+const App = ({ roomEnhancer, clients, localStream, localVideoStream, ...props }) => {
   // This function is set if the room crowds because hot reload and  the disconnect trigger is not fired
+
+  const [room, setRoom] = useState(
+    roomEnhancer((roomBuilder) =>
+      (
+        roomBuilder.setMetadata({ name: "Augusto Alonso" })
+          .setOnStreamDennied(() => {
+            alert("Por favor otorgue los permisos necesarios")
+          })
+        // .setWithAudio(false)
+      )
+    ).build()
+  )
   const cleanRoom = () => {
     room.clients.map((client) => client.id)
       .forEach(id => {
@@ -44,16 +29,17 @@ function App() {
           },
           body: JSON.stringify({
             action: action,
-            room_id: this.room.id,
+            room_id: room.id,
             peer_id: id,
-            metadata: this.room.metadata
+            metadata: room.metadata
           }),
           keepalive: true,
         })
       })
   }
-  useEffect(() => {
-    //First parameter of room connect is on successfull connection callback
+  let connect = () => {
+
+    // First parameter of room connect is on successfull connection callback
     room.connect((id) => {
       // This function is set if the room crowds because hot reload and  the disconnect trigger is not fired
       // cleanRoom()
@@ -61,39 +47,49 @@ function App() {
       //Handles the automatic unregister of a client in the room this is necessary beacuse react uses
       // sets the before unload only in the component will mount and component will unmount
 
-      let onUnload = () => { room.close() }
-      window.addEventListener("beforeunload", onUnload);
-      return () => window.removeEventListener("beforeunload", onUnload);
+      // let onUnload = () => { room.close() }
+      // window.addEventListener("beforeunload", onUnload);
+      // return () => window.removeEventListener("beforeunload", onUnload);
       // room.close()
     })
-  }, [])
+  }
   return (
     <div className="row p-4">
-      <div className="col-3">
+      <div className="col-md-3 col-12">
         <div className="card w-100 text-center">
-          <h2 className="card-header card-title">{localMetadata.name}</h2>
-          <Video
+          {props.pepe}
+          <h2 className="card-header card-title">{room.metadata.name}</h2>
+          <button onClick={() => {
+            connect()
+          }}>Conectar</button>
+          <button onClick={() => {
+            room.toggleMute()
+          }}>mic toggle</button>
+          <button onClick={() => {
+            room.toggleCamera()
+          }}>camera toggle</button>
+          {/* <Video
             className="w-100 video"
             height={250}
             autoPlay
             controls
-            srcObject={videoStream}
+            srcObject={localVideoStream}
           >
-          </Video>
+          </Video> */}
         </div>
       </div>
       {
-        clients.map(client => (<div key={client.id} className="col-3">
+        clients.map(client => (<div key={client.id} className="col-md-3 col-12">
           <div className="card w-100 text-center">
             <h2 className="card-header card-title">{client.metadata.name}</h2>
-            <Video
+            {/* <Video
               className="w-100 video"
               height={250}
               autoPlay
               controls
               srcObject={client.stream}
             >
-            </Video>
+            </Video> */}
           </div>
         </div>))
       }

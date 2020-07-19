@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { connectToRoom } from './QCall'
 import 'bootstrap/dist/css/bootstrap.css';
+const PascalCase = connectToRoom({ id: "1", deploy: "default", apiKey: "AcWTcIXA6Z95uYDOLMb9U8uZH5eeSb045FB8fXu5" }, App)
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <PascalCase pepe="hehe" />
   </React.StrictMode>,
   document.getElementById('root')
 );
